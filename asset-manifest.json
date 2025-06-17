@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/motogp-dashboard/static/css/main.92c8d4eb.css",
+    "main.js": "/motogp-dashboard/static/js/main.72eff440.js",
+    "index.html": "/motogp-dashboard/index.html",
+    "main.92c8d4eb.css.map": "/motogp-dashboard/static/css/main.92c8d4eb.css.map",
+    "main.72eff440.js.map": "/motogp-dashboard/static/js/main.72eff440.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.92c8d4eb.css",
+    "static/js/main.72eff440.js"
+  ]
+}

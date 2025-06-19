@@ -1,33 +1,14 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
 import { Trophy, Target, Timer, Flag } from 'lucide-react';
 import Papa from 'papaparse';
 import _ from 'lodash';
 import { raceResults2024 } from '../data/raceResults2024';
 import { raceResults2025 } from '../data/raceResults2025';
 
-// Move constants outside component to prevent recreation
-const RIDER_COLORS = {
-  'Jorge Martin': '#FF6B6B',
-  'Francesco Bagnaia': '#4ECDC4',
-  'Marc Marquez': '#FFA500',
-  'Alex Marquez': '#C9B037',
-  'Enea Bastianini': '#95E1D3',
-  'Pedro Acosta': '#F38181',
-  'Brad Binder': '#FFE66D',
-  'Marco Bezzecchi': '#A8E6CF',
-  'Fabio Quartararo': '#C7CEEA',
-  'Johann Zarco': '#B19CD9',
-  'Franco Morbidelli': '#98D8C8',
-  'Fabio di Giannantonio': '#F7DC6F',
-  'Maverick Vinales': '#85C1E2',
-  'Fermin Aldeguer': '#F8C471',
-  'Ai Ogura': '#BB8FCE'
-};
-
 const MotoGPDashboard = () => {
   const [data, setData] = useState([]);
-  const [selectedSeason, setSelectedSeason] = useState(2024);
+  const [selectedSeason, setSelectedSeason] = useState(2025);
   const [selectedClass, setSelectedClass] = useState('MotoGP');
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('overview');
@@ -49,13 +30,12 @@ const MotoGPDashboard = () => {
       
       setData(parsed.data);
       
+      // Extract unique seasons from the data
       const seasons = [...new Set(parsed.data.map(row => row.season))].filter(s => s).sort((a, b) => b - a);
       setAvailableSeasons(seasons);
       
-      // Set default to 2024 if available, otherwise most recent
-      if (seasons.includes(2024)) {
-        setSelectedSeason(2024);
-      } else if (seasons.length > 0) {
+      // Set the most recent season as default
+      if (seasons.length > 0) {
         setSelectedSeason(seasons[0]);
       }
       
@@ -66,59 +46,59 @@ const MotoGPDashboard = () => {
     }
   };
 
-  // Memoize filtered data
-  const filteredData = useMemo(() => 
-    data.filter(d => d.class === selectedClass),
-    [data, selectedClass]
-  );
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="text-white text-xl">Carregant dades...</div>
+      </div>
+    );
+  }
 
-  // Memoize race name getter
-  const getRaceName = useCallback((raceIndex) => {
+  // Filter data by class and season
+  const filteredData = data.filter(d => d.class === selectedClass);
+  
+  // Prepare data for the real bump chart
+  const generateBumpChartData = () => {
     if (selectedSeason === 2024 && selectedClass === 'MotoGP') {
-      return Object.keys(raceResults2024)[raceIndex];
-    } else if (selectedSeason === 2025 && selectedClass === 'MotoGP') {
-      return Object.keys(raceResults2025)[raceIndex];
-    }
-    return `Cursa ${raceIndex + 1}`;
-  }, [selectedSeason, selectedClass]);
-
-  // Memoize bump chart data generation
-  const { bumpData, riders } = useMemo(() => {
-    if (selectedSeason === 2024 && selectedClass === 'MotoGP') {
+      // Use real 2024 data
       const races = Object.keys(raceResults2024);
       const allRiders = new Set();
       
+      // Get all unique riders from the season
       races.forEach(race => {
         Object.keys(raceResults2024[race].sprint).forEach(rider => allRiders.add(rider));
         Object.keys(raceResults2024[race].main).forEach(rider => allRiders.add(rider));
       });
       
-      const ridersList = Array.from(allRiders);
+      const riders = Array.from(allRiders);
       let cumulativePoints = {};
-      ridersList.forEach(rider => { cumulativePoints[rider] = 0; });
+      riders.forEach(rider => { cumulativePoints[rider] = 0; });
       
-      const chartData = [];
+      const bumpData = [];
       
       races.forEach((race, index) => {
         const raceData = { race: index + 1, raceName: race };
         const sprintPoints = raceResults2024[race].sprint;
         const mainPoints = raceResults2024[race].main;
         
-        ridersList.forEach(rider => {
+        // Add sprint + main points to cumulative
+        riders.forEach(rider => {
           cumulativePoints[rider] += (sprintPoints[rider] || 0) + (mainPoints[rider] || 0);
           raceData[rider] = cumulativePoints[rider];
         });
         
-        chartData.push(raceData);
+        bumpData.push(raceData);
       });
       
+      // Sort riders by final points for display
       const sortedRiders = Object.entries(cumulativePoints)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10)
         .map(([rider]) => rider);
       
-      return { bumpData: chartData, riders: sortedRiders };
+      return { bumpData, riders: sortedRiders };
     } else if (selectedSeason === 2025 && selectedClass === 'MotoGP') {
+      // Use real 2025 data (partial season)
       const races = Object.keys(raceResults2025);
       const allRiders = new Set();
       
@@ -127,23 +107,23 @@ const MotoGPDashboard = () => {
         Object.keys(raceResults2025[race].main).forEach(rider => allRiders.add(rider));
       });
       
-      const ridersList = Array.from(allRiders);
+      const riders = Array.from(allRiders);
       let cumulativePoints = {};
-      ridersList.forEach(rider => { cumulativePoints[rider] = 0; });
+      riders.forEach(rider => { cumulativePoints[rider] = 0; });
       
-      const chartData = [];
+      const bumpData = [];
       
       races.forEach((race, index) => {
         const raceData = { race: index + 1, raceName: race };
         const sprintPoints = raceResults2025[race].sprint;
         const mainPoints = raceResults2025[race].main;
         
-        ridersList.forEach(rider => {
+        riders.forEach(rider => {
           cumulativePoints[rider] += (sprintPoints[rider] || 0) + (mainPoints[rider] || 0);
           raceData[rider] = cumulativePoints[rider];
         });
         
-        chartData.push(raceData);
+        bumpData.push(raceData);
       });
       
       const sortedRiders = Object.entries(cumulativePoints)
@@ -151,13 +131,14 @@ const MotoGPDashboard = () => {
         .slice(0, 10)
         .map(([rider]) => rider);
       
-      return { bumpData: chartData, riders: sortedRiders };
+      return { bumpData, riders: sortedRiders };
     } else {
+      // For other seasons, use simulation based on CSV data
       const seasonData = filteredData.filter(d => d.season === selectedSeason);
       const sortedRiders = _.orderBy(seasonData, ['points'], ['desc']).slice(0, 10);
       
       const races = 20;
-      const chartData = [];
+      const bumpData = [];
       
       for (let race = 1; race <= races; race++) {
         const raceData = { race };
@@ -168,29 +149,28 @@ const MotoGPDashboard = () => {
           const randomFactor = 1 + (Math.random() - 0.5) * variation;
           raceData[rider.rider_name] = Math.round(pointsAtRace * randomFactor);
         });
-        chartData.push(raceData);
+        bumpData.push(raceData);
       }
       
-      return { bumpData: chartData, riders: sortedRiders.map(r => r.rider_name) };
+      return { bumpData, riders: sortedRiders.map(r => r.rider_name) };
     }
-  }, [filteredData, selectedSeason, selectedClass]);
+  };
 
-  // Memoize consistency data
-  const consistencyData = useMemo(() => {
+  // Prepare data for scatter plot Consistency vs Glory
+  const getConsistencyData = () => {
     const seasonData = filteredData.filter(d => d.season === selectedSeason);
     return seasonData.map(rider => ({
       name: rider.rider_name,
       wins: rider.wins,
       points: rider.points,
       podiums: rider.podium,
-      avgPoints: rider.races_participated > 0 ? 
-        (rider.points / rider.races_participated).toFixed(1) : 0,
+      avgPoints: rider.races_participated > 0 ? (rider.points / rider.races_participated).toFixed(1) : 0,
       team: rider.team
     })).filter(r => r.points > 50);
-  }, [filteredData, selectedSeason]);
+  };
 
-  // Memoize radar data
-  const radarData = useMemo(() => {
+  // Prepare data for radar chart
+  const getRadarData = () => {
     const seasonData = filteredData.filter(d => d.season === selectedSeason);
     const topRiders = _.orderBy(seasonData, ['points'], ['desc']).slice(0, 5);
     
@@ -205,13 +185,12 @@ const MotoGPDashboard = () => {
       Podis: (rider.podium / maxPodiums) * 100,
       Poles: (rider.pole / maxPoles) * 100,
       Punts: (rider.points / maxPoints) * 100,
-      Regularitat: rider.races_participated > 0 ? 
-        ((rider.points / rider.races_participated) / 25) * 100 : 0
+      Regularitat: rider.races_participated > 0 ? ((rider.points / rider.races_participated) / 25) * 100 : 0
     }));
-  }, [filteredData, selectedSeason]);
+  };
 
-  // Memoize timeline data
-  const timelineData = useMemo(() => {
+  // Historical timeline
+  const getTimelineData = () => {
     const riders = ['Jorge Martin', 'Francesco Bagnaia', 'Marc Marquez', 'Fabio Quartararo'];
     const timelineSeasons = availableSeasons.filter(s => s >= 2018 && s <= 2025);
     
@@ -223,28 +202,41 @@ const MotoGPDashboard = () => {
       });
       return seasonObj;
     });
-  }, [filteredData, availableSeasons]);
+  };
 
-  // Memoize handlers
-  const handleSeasonChange = useCallback((e) => {
-    setSelectedSeason(Number(e.target.value));
-  }, []);
+  const { bumpData, riders } = generateBumpChartData();
+  const consistencyData = getConsistencyData();
+  const radarData = getRadarData();
+  const timelineData = getTimelineData();
 
-  const handleClassChange = useCallback((e) => {
-    setSelectedClass(e.target.value);
-  }, []);
+  // Colors for riders
+  const riderColors = {
+    'Jorge Martin': '#FF6B6B',
+    'Francesco Bagnaia': '#4ECDC4',
+    'Marc Marquez': '#FFA500',
+    'Alex Marquez': '#C9B037',
+    'Enea Bastianini': '#95E1D3',
+    'Pedro Acosta': '#F38181',
+    'Brad Binder': '#FFE66D',
+    'Marco Bezzecchi': '#A8E6CF',
+    'Fabio Quartararo': '#C7CEEA',
+    'Johann Zarco': '#B19CD9',
+    'Franco Morbidelli': '#98D8C8',
+    'Fabio di Giannantonio': '#F7DC6F',
+    'Maverick Vinales': '#85C1E2',
+    'Fermin Aldeguer': '#F8C471',
+    'Ai Ogura': '#BB8FCE'
+  };
 
-  const handleViewModeChange = useCallback((mode) => {
-    setViewMode(mode);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
-        <div className="text-white text-xl">Carregant dades...</div>
-      </div>
-    );
-  }
+  // Get race names for 2024/2025
+  const getRaceName = (raceIndex) => {
+    if (selectedSeason === 2024 && selectedClass === 'MotoGP') {
+      return Object.keys(raceResults2024)[raceIndex];
+    } else if (selectedSeason === 2025 && selectedClass === 'MotoGP') {
+      return Object.keys(raceResults2025)[raceIndex];
+    }
+    return `Cursa ${raceIndex + 1}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
@@ -260,7 +252,7 @@ const MotoGPDashboard = () => {
       <div className="mb-6 flex gap-4 flex-wrap">
         <select 
           value={selectedSeason} 
-          onChange={handleSeasonChange}
+          onChange={(e) => setSelectedSeason(Number(e.target.value))}
           className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:border-red-500 outline-none"
         >
           {availableSeasons.map(year => (
@@ -272,7 +264,7 @@ const MotoGPDashboard = () => {
 
         <select 
           value={selectedClass} 
-          onChange={handleClassChange}
+          onChange={(e) => setSelectedClass(e.target.value)}
           className="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 focus:border-red-500 outline-none"
         >
           <option value="MotoGP">MotoGP</option>
@@ -282,13 +274,13 @@ const MotoGPDashboard = () => {
 
         <div className="flex gap-2">
           <button 
-            onClick={() => handleViewModeChange('overview')}
+            onClick={() => setViewMode('overview')}
             className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'overview' ? 'bg-red-600' : 'bg-gray-800'}`}
           >
             Vista General
           </button>
           <button 
-            onClick={() => handleViewModeChange('detailed')}
+            onClick={() => setViewMode('detailed')}
             className={`px-4 py-2 rounded-lg transition-all ${viewMode === 'detailed' ? 'bg-red-600' : 'bg-gray-800'}`}
           >
             Anàlisi Detallada
@@ -369,8 +361,33 @@ const MotoGPDashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Bump Chart */}
+          {/* Historical Timeline */}
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 lg:col-span-2">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Timer className="w-5 h-5 text-blue-500" />
+              Evolució Històrica (2018-{selectedSeason})
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={timelineData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="season" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="Jorge Martin" stroke="#FF6B6B" strokeWidth={3} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="Francesco Bagnaia" stroke="#4ECDC4" strokeWidth={3} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="Marc Marquez" stroke="#FFA500" strokeWidth={3} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="Fabio Quartararo" stroke="#C7CEEA" strokeWidth={3} dot={{ r: 4 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Bump Chart Real */}
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
               <Flag className="w-5 h-5 text-purple-500" />
               Evolució del Campionat - Cursa a Cursa ({selectedSeason})
@@ -379,7 +396,7 @@ const MotoGPDashboard = () => {
               <div className="mb-4 p-4 bg-green-900/20 rounded-lg border border-green-600/30">
                 <p className="text-sm text-green-200">
                   ✅ Dades reals del {selectedSeason}: Sprint + Curses principals. 
-                  {selectedSeason === 2025 && " Temporada en curs (8 de 22 curses completades)."}
+                  {selectedSeason === 2025 && "Temporada en curs (8 de 22 curses completades)."}
                 </p>
               </div>
             ) : (
@@ -434,7 +451,7 @@ const MotoGPDashboard = () => {
                     key={rider}
                     type="monotone" 
                     dataKey={rider} 
-                    stroke={RIDER_COLORS[rider] || `hsl(${index * 360 / riders.length}, 70%, 50%)`}
+                    stroke={riderColors[rider] || `hsl(${index * 360 / riders.length}, 70%, 50%)`}
                     strokeWidth={2}
                     dot={{ r: 3 }}
                   />
@@ -443,298 +460,102 @@ const MotoGPDashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Historical Timeline */}
-          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 lg:col-span-2">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Timer className="w-5 h-5 text-blue-500" />
-              Timeline Històric - Evolució 2018-2025
-            </h2>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={timelineData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="season" 
-                  stroke="#9CA3AF"
-                  label={{ value: 'Temporada', position: 'insideBottom', offset: -5 }}
-                />
-                <YAxis 
-                  stroke="#9CA3AF"
-                  label={{ value: 'Punts Totals', angle: -90, position: 'insideLeft' }}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
-                />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="Jorge Martin" 
-                  stroke="#FF6B6B" 
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="Francesco Bagnaia" 
-                  stroke="#4ECDC4" 
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="Marc Marquez" 
-                  stroke="#FFA500" 
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="Fabio Quartararo" 
-                  stroke="#C7CEEA" 
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      ) : (
-        /* Detailed Analysis View */
-        <div className="space-y-6">
-          {/* Case Study: Martin vs Bagnaia 2024 */}
-          {selectedSeason === 2024 && selectedClass === 'MotoGP' && (
-            <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-8 rounded-xl border border-gray-700">
-              <h2 className="text-2xl font-bold mb-6">Cas d'Estudi: Martin vs Bagnaia 2024</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                {/* Jorge Martin Stats */}
-                <div className="bg-gray-800/50 p-6 rounded-lg">
-                  <h3 className="text-xl font-bold text-red-500 mb-4">Jorge Martín</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Victòries</span>
-                      <span className="font-bold">3</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Podis</span>
-                      <span className="font-bold">16</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Punts totals</span>
-                      <span className="font-bold text-green-400">508</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Mitjana punts/cursa</span>
-                      <span className="font-bold">25.4</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 p-3 bg-green-900/20 rounded-lg">
-                    <p className="text-sm text-green-200">
-                      🏆 Campió del Món 2024
-                    </p>
-                  </div>
-                </div>
-
-                {/* Francesco Bagnaia Stats */}
-                <div className="bg-gray-800/50 p-6 rounded-lg">
-                  <h3 className="text-xl font-bold text-cyan-400 mb-4">Francesco Bagnaia</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Victòries</span>
-                      <span className="font-bold">11</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Podis</span>
-                      <span className="font-bold">16</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Punts totals</span>
-                      <span className="font-bold">498</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Mitjana punts/cursa</span>
-                      <span className="font-bold">24.9</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 p-3 bg-yellow-900/20 rounded-lg">
-                    <p className="text-sm text-yellow-200">
-                      🥈 Subcampió (−10 punts)
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-700/30 p-6 rounded-lg">
-                <h4 className="font-bold mb-3">Anàlisi de la paradoxa</h4>
-                <p className="text-gray-300 mb-3">
-                  La temporada 2024 va demostrar que la consistència pot superar l'espectacularitat. 
-                  Mentre Bagnaia va aconseguir 11 victòries (el 55% de les curses), Martín va guanyar 
-                  el campionat amb només 3 victòries gràcies a:
-                </p>
-                <ul className="list-disc list-inside text-gray-300 space-y-2">
-                  <li>Regularitat excepcional: sempre als punts</li>
-                  <li>Gestió de riscos superior en moments clau</li>
-                  <li>Maximització dels punts en curses sprint</li>
-                  <li>Només 1 abandonament vs 4 de Bagnaia</li>
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {/* Season Statistics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <p className="text-sm text-gray-400 mb-2">Líder actual</p>
-              <p className="text-2xl font-bold">
-                {riders[0] || 'N/A'}
-              </p>
-              <p className="text-sm text-green-400 mt-2">
-                {bumpData.length > 0 ? bumpData[bumpData.length - 1][riders[0]] : 0} punts
-              </p>
-            </div>
-
-            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <p className="text-sm text-gray-400 mb-2">Total de curses</p>
-              <p className="text-2xl font-bold">
-                {selectedSeason === 2025 ? '8 de 22' : selectedSeason === 2024 ? '20' : '20'}
-              </p>
-              <p className="text-sm text-blue-400 mt-2">
-                {selectedSeason === 2025 ? '36%' : '100%'} completat
-              </p>
-            </div>
-
-            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <p className="text-sm text-gray-400 mb-2">Diferència líder-segon</p>
-              <p className="text-2xl font-bold">
-                {bumpData.length > 0 && riders.length > 1 ? 
-                  Math.abs(bumpData[bumpData.length - 1][riders[0]] - bumpData[bumpData.length - 1][riders[1]]) : 0} pts
-              </p>
-              <p className="text-sm text-yellow-400 mt-2">
-                {selectedSeason === 2025 ? 'En disputa' : 'Final'}
-              </p>
-            </div>
-
-            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <p className="text-sm text-gray-400 mb-2">Guanyadors diferents</p>
-              <p className="text-2xl font-bold">
-                {consistencyData.filter(r => r.wins > 0).length}
-              </p>
-              <p className="text-sm text-purple-400 mt-2">
-                pilots amb victòries
-              </p>
-            </div>
-          </div>
-
-          {/* Performance Metrics Table */}
+          {/* Season Statistics */}
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 className="text-xl font-bold mb-4">Mètriques de Rendiment - Top 10</h3>
+            <h2 className="text-xl font-bold mb-4">Estadístiques de la Temporada {selectedSeason}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <p className="text-sm text-gray-400">Líder actual</p>
+                <p className="text-xl font-bold">
+                  {riders[0] || 'N/A'}
+                </p>
+              </div>
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <p className="text-sm text-gray-400">Total de curses</p>
+                <p className="text-xl font-bold">
+                  {selectedSeason === 2025 ? '8 de 22' : selectedSeason === 2024 ? '20' : '20 (simulat)'}
+                </p>
+              </div>
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <p className="text-sm text-gray-400">Diferència líder-segon</p>
+                <p className="text-xl font-bold">
+                  {bumpData.length > 0 ? 
+                    `${bumpData[bumpData.length - 1][riders[0]] - bumpData[bumpData.length - 1][riders[1]]} pts` 
+                    : 'N/A'}
+                </p>
+              </div>
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <p className="text-sm text-gray-400">Pilots amb victòries</p>
+                <p className="text-xl font-bold">
+                  {consistencyData.filter(r => r.wins > 0).length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Top 10 Standings */}
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+            <h2 className="text-xl font-bold mb-4">Classificació Top 10 - {selectedSeason}</h2>
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-700">
-                    <th className="text-left py-3 px-4">Pilot</th>
-                    <th className="text-center py-3 px-4">Punts</th>
-                    <th className="text-center py-3 px-4">Victòries</th>
-                    <th className="text-center py-3 px-4">Podis</th>
-                    <th className="text-center py-3 px-4">Poles</th>
-                    <th className="text-center py-3 px-4">Mitjana</th>
+                    <th className="text-left p-2">Pos</th>
+                    <th className="text-left p-2">Pilot</th>
+                    <th className="text-left p-2">Equip</th>
+                    <th className="text-center p-2">Punts</th>
+                    <th className="text-center p-2">Victòries</th>
+                    <th className="text-center p-2">Podis</th>
+                    <th className="text-center p-2">Poles</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {consistencyData.slice(0, 10).map((rider, idx) => (
-                    <tr key={rider.name} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">{idx + 1}.</span>
-                          <span className="font-medium">{rider.name}</span>
-                        </div>
-                      </td>
-                      <td className="text-center py-3 px-4 font-bold">{rider.points}</td>
-                      <td className="text-center py-3 px-4">{rider.wins}</td>
-                      <td className="text-center py-3 px-4">{rider.podiums}</td>
-                      <td className="text-center py-3 px-4">
-                        {filteredData.find(d => d.rider_name === rider.name && d.season === selectedSeason)?.pole || 0}
-                      </td>
-                      <td className="text-center py-3 px-4 text-green-400">{rider.avgPoints}</td>
-                    </tr>
-                  ))}
+                  {filteredData
+                    .filter(d => d.season === selectedSeason)
+                    .sort((a, b) => b.points - a.points)
+                    .slice(0, 10)
+                    .map((rider, index) => (
+                      <tr key={rider.rider_name} className="border-b border-gray-700/50">
+                        <td className="p-2">{index + 1}</td>
+                        <td className="p-2 font-semibold">{rider.rider_name}</td>
+                        <td className="p-2 text-gray-400">{rider.team}</td>
+                        <td className="p-2 text-center font-bold">{rider.points}</td>
+                        <td className="p-2 text-center">{rider.wins}</td>
+                        <td className="p-2 text-center">{rider.podium}</td>
+                        <td className="p-2 text-center">{rider.pole}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Key Insights for Selected Season */}
-          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 className="text-xl font-bold mb-4">Insights Clau - {selectedSeason}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold text-yellow-400 mb-2">Millor puntuador</h4>
-                <p className="text-gray-300">
-                  {consistencyData[0]?.name || 'N/A'} amb {consistencyData[0]?.points || 0} punts
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-yellow-400 mb-2">Pilot més victoriós</h4>
-                <p className="text-gray-300">
-                  {_.maxBy(consistencyData, 'wins')?.name || 'N/A'} amb {_.maxBy(consistencyData, 'wins')?.wins || 0} victòries
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-yellow-400 mb-2">Mitjana més alta</h4>
-                <p className="text-gray-300">
-                  {_.maxBy(consistencyData, (r) => parseFloat(r.avgPoints))?.name || 'N/A'} amb {
-                    _.maxBy(consistencyData, (r) => parseFloat(r.avgPoints))?.avgPoints || 0
-                  } pts/cursa
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-yellow-400 mb-2">Competitivitat</h4>
-                <p className="text-gray-300">
-                  {consistencyData.filter(r => r.podiums > 0).length} pilots han pujat al podi
-                </p>
+          {/* Comparative Analysis */}
+          {selectedSeason === 2024 && (
+            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+              <h2 className="text-xl font-bold mb-4">Cas d'Estudi: Martín vs Bagnaia 2024</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-red-400">Jorge Martín - El Campió Consistent</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li>• Només 3 victòries però 508 punts totals</li>
+                    <li>• 32 podis de 40 curses (80% de regularitat)</li>
+                    <li>• Estratègia: minimitzar riscos, assegurar punts</li>
+                    <li>• Clau: rendiment excel·lent en sprints</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-blue-400">Francesco Bagnaia - El Rei de les Victòries</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li>• 11 victòries però 498 punts totals</li>
+                    <li>• 7 abandons que van costar el títol</li>
+                    <li>• Estratègia: tot o res per la victòria</li>
+                    <li>• Clau: velocitat pura però inconsistència</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Team Performance Summary */}
-          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 className="text-xl font-bold mb-4">Rendiment per Equips - {selectedSeason}</h3>
-            <div className="space-y-4">
-              {(() => {
-                const teamData = _.groupBy(
-                  filteredData.filter(d => d.season === selectedSeason),
-                  'team'
-                );
-                const teamSummary = Object.entries(teamData)
-                  .map(([team, riders]) => ({
-                    team,
-                    totalPoints: _.sumBy(riders, 'points'),
-                    totalWins: _.sumBy(riders, 'wins'),
-                    totalPodiums: _.sumBy(riders, 'podium'),
-                    riderCount: riders.length
-                  }))
-                  .sort((a, b) => b.totalPoints - a.totalPoints)
-                  .slice(0, 5);
-
-                return teamSummary.map((team, idx) => (
-                  <div key={team.team} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl font-bold text-gray-500">{idx + 1}</span>
-                      <div>
-                        <p className="font-semibold">{team.team}</p>
-                        <p className="text-sm text-gray-400">{team.riderCount} pilot{team.riderCount > 1 ? 's' : ''}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">{team.totalPoints} pts</p>
-                      <p className="text-sm text-gray-400">
-                        {team.totalWins} victòries, {team.totalPodiums} podis
-                      </p>
-                    </div>
-                  </div>
-                ));
-              })()}
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>

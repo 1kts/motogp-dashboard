@@ -300,9 +300,11 @@
             .header h1 {
                 font-size: 2rem;
             }
+            
             .container {
                 padding: 1rem;
             }
+            
             .chart-container {
                 padding: 1rem;
             }
@@ -315,724 +317,482 @@
             <h1>MotoGP Championship Evolution</h1>
             <p>Anàlisi interactiva del rànquing de pilots cursa a cursa</p>
         </div>
+        
         <div class="controls">
             <button class="btn active" onclick="showSeason('2024')">Temporada 2024</button>
             <button class="btn" onclick="showSeason('2025')">Temporada 2025</button>
             <button class="btn" onclick="showComparison()">Comparació 2024 vs 2025</button>
         </div>
+        
         <div class="chart-container">
             <div id="bumpchart"></div>
         </div>
-        <div class="legend" id="legend"></div>
-        <div class="stats-grid" id="stats-grid">
-            </div>
-    </div>
-    <div class="tooltip" id="tooltip"></div>
-
-    <script>
-        // race_data.js content 
-        const raceData = [
-            // --- 2024 Sprint Races ---
-            {
-                season: 2024,
-                race_number: 1,
-                race_name: "Qatar GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Francesco Bagnaia", position: 2, points: 9 },
-                    { rider_name: "Jack Miller", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 2,
-                race_name: "Portugal GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Maverick Viñales", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Jorge Martín", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 3,
-                race_name: "Americas GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Maverick Viñales", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Jorge Martín", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 4,
-                race_name: "Spanish GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Pedro Acosta", position: 2, points: 9 },
-                    { rider_name: "Dani Pedrosa", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 5,
-                race_name: "French GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Maverick Viñales", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 6,
-                race_name: "Catalan GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Aleix Espargaró", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Pedro Acosta", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 7,
-                race_name: "Italian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Francesco Bagnaia", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Pedro Acosta", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 8,
-                race_name: "Kazakhstan GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Marc Márquez", position: 1, points: 12 },
-                    { rider_name: "Jorge Martín", position: 2, points: 9 },
-                    { rider_name: "Francesco Bagnaia", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 9,
-                race_name: "Dutch GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Francesco Bagnaia", position: 1, points: 12 },
-                    { rider_name: "Jorge Martín", position: 2, points: 9 },
-                    { rider_name: "Marc Márquez", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 10,
-                race_name: "German GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Francesco Bagnaia", position: 2, points: 9 },
-                    { rider_name: "Marc Márquez", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 11,
-                race_name: "British GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Enea Bastianini", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 12,
-                race_name: "Austrian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Francesco Bagnaia", position: 1, points: 12 },
-                    { rider_name: "Jorge Martín", position: 2, points: 9 },
-                    { rider_name: "Enea Bastianini", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 13,
-                race_name: "Aragon GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Enea Bastianini", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 14,
-                race_name: "San Marino GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Francesco Bagnaia", position: 2, points: 9 },
-                    { rider_name: "Marc Márquez", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 15,
-                race_name: "Indian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Francesco Bagnaia", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 16,
-                race_name: "Japanese GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Francesco Bagnaia", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Enea Bastianini", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 17,
-                race_name: "Australian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Marc Márquez", position: 2, points: 9 },
-                    { rider_name: "Enea Bastianini", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 18,
-                race_name: "Thai GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Enea Bastianini", position: 1, points: 12 },
-                    { rider_name: "Jorge Martín", position: 2, points: 9 },
-                    { rider_name: "Francesco Bagnaia", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 19,
-                race_name: "Malaysian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Francesco Bagnaia", position: 2, points: 9 },
-                    { rider_name: "Marc Márquez", position: 3, points: 7 }
-                ]
-            },
-            {
-                season: 2024,
-                race_number: 20,
-                race_name: "Valencian GP",
-                race_type: "Sprint",
-                results: [
-                    { rider_name: "Jorge Martín", position: 1, points: 12 },
-                    { rider_name: "Francesco Bagnaia", position: 2, points: 9 },
-                    { rider_name: "Marc Márquez", position: 3, points: 7 }
-                ]
-            }
-        ];
-
-        // RidersSummary.csv content 
-        const csvContent = `bike_number,rider_name,class,season,home_country,motorcycle,team,races_participated,wins,podium,pole,fastest_lap,points,placed,world_championships
-1,Jorge Martin,Moto3,2015,Spain,Mahindra,Mapfre Team Mahindra,18,0,0,0,0,45,17,0
-1,Jorge Martin,Moto3,2016,Spain,Mahindra,Pull & Bear Aspar Mahindra Team,16,0,1,0,0,72,16,0
-1,Jorge Martin,Moto3,2017,Spain,Honda,Del Conca Gresini Moto3,16,1,9,9,2,196,4,0
-1,Jorge Martin,Moto3,2018,Spain,Honda,Del Conca Gresini Moto3,17,7,10,11,3,260,1,1
-1,Jorge Martin,Moto2,2019,Spain,KTM,Red Bull KTM Ajo,19,0,2,0,1,94,11,0
-1,Jorge Martin,Moto2,2020,Spain,Kalex,Red Bull KTM Ajo,13,2,6,1,2,160,5,0
-1,Jorge Martin,MotoGP,2021,Spain,Ducati,Pramac Racing,14,1,4,4,0,111,9,0
-1,Jorge Martin,MotoGP,2022,Spain,Ducati,Pramac Racing,20,0,4,5,2,152,9,0
-1,Jorge Martin,MotoGP,2023,Spain,Ducati,Prima Pramac Racing,20,4,8,4,2,428,2,0
-1,Jorge Martin,MotoGP,2024,Spain,Ducati,Prima Pramac Racing,20,3,16,7,2,508,1,1
-1,Jorge Martin,MotoGP,2025,Spain,Aprilia,Aprilia Racing,0,0,0,0,0,0,0,0
-5,Johann Zarco,125cc,2009,France,Aprilia,WTR San Marino Team,16,0,0,0,0,32,20,0
-5,Johann Zarco,125cc,2010,France,Aprilia,WTR San Marino Team,17,0,0,0,1,77,11,0
-5,Johann Zarco,125cc,2011,France,Derbi,Avant-AirAsia-Ajo,17,1,11,4,4,262,2,0
-5,Johann Zarco,Moto2,2012,France,Motobi,JiR Moto2,17,0,0,0,0,95,10,0
-5,Johann Zarco,Moto2,2013,France,Suter,Came IodaRacing Project,17,0,2,0,2,141,9,0
-5,Johann Zarco,Moto2,2014,France,Caterham Suter,AirAsia Caterham,18,0,4,1,0,146,6,0
-5,Johann Zarco,Moto2,2015,France,Kalex,Ajo Motorsport,18,8,14,7,1,352,1,1
-5,Johann Zarco,Moto2,2016,France,Kalex,Ajo Motorsport,18,7,10,7,4,276,1,1
-5,Johann Zarco,MotoGP,2017,France,Yamaha,Monster Yamaha Tech3,18,0,3,2,4,174,6,0
-5,Johann Zarco,MotoGP,2018,France,Yamaha,Monster Yamaha Tech3,18,0,3,2,0,158,6,0
-5,Johann Zarco,MotoGP,2019,France,KTM,Red Bull KTM Factory Racing,13,0,0,0,0,27,18,0
-5,Johann Zarco,MotoGP,2019,France,Honda,LCR Honda Idemitsu,3,0,0,0,0,3,18,0
-5,Johann Zarco,MotoGP,2020,France,Ducati,Avintia Esponsorama Racing,14,0,1,1,1,77,13,0
-5,Johann Zarco,MotoGP,2021,France,Ducati,Pramac Racing,18,0,4,1,2,173,5,0
-5,Johann Zarco,MotoGP,2022,France,Ducati,Pramac Racing,20,0,4,2,2,166,8,0
-5,Johann Zarco,MotoGP,2023,France,Ducati,Prima Pramac Racing,20,1,6,0,2,225,5,0
-5,Johann Zarco,MotoGP,2024,France,Honda,Castrol Honda LCR,20,0,0,0,0,55,17,0
-5,Johann Zarco,MotoGP,2025,France,Honda,Castrol Honda LCR,1,0,0,0,0,9,8,0
-10,Luca Marini,Moto3,2013,Italy,FTR Honda,Twelve Racing,1,0,0,0,0,0,0,0
-10,Luca Marini,Moto2,2015,Italy,Kalex,Pons Racing Junior Team,1,0,0,0,0,0,0,0
-10,Luca Marini,Moto2,2016,Italy,Kalex,Forward Racing Team,18,0,0,0,1,34,23,0
-10,Luca Marini,Moto2,2017,Italy,Kalex,Forward Racing Team,16,0,0,0,0,59,15,0
-10,Luca Marini,Moto2,2018,Italy,Kalex,Sky Racing Team VR46,18,1,5,2,1,147,7,0
-10,Luca Marini,Moto2,2019,Italy,Kalex,Sky Racing Team VR46,19,2,4,1,2,190,6,0
-10,Luca Marini,Moto2,2020,Italy,Kalex,Sky Racing Team VR46,15,3,6,2,1,196,2,0
-10,Luca Marini,MotoGP,2021,Italy,Ducati,Sky VR46 Avintia,18,0,0,0,0,41,19,0
-10,Luca Marini,MotoGP,2022,Italy,Ducati,Mooney VR46 Racing Team,20,0,0,0,1,120,12,0
-10,Luca Marini,MotoGP,2023,Italy,Ducati,Mooney VR46 Racing Team,18,0,2,2,0,201,8,0
-10,Luca Marini,MotoGP,2024,Italy,Honda,Repsol Honda Team,19,0,0,0,0,14,22,0
-10,Luca Marini,MotoGP,2025,Italy,Honda,Honda HRC Castrol,0,0,0,0,0,0,0,0
-12,Maverick Vinales,125cc,2011,Spain,Aprilia RSA 125,Blusens by Paris Hilton Racing,17,4,9,3,3,248,3,0
-12,Maverick Vinales,Moto3,2012,Spain,FTR M312,Blusens Avintia,15,5,7,5,1,207,3,0
-12,Maverick Vinales,Moto3,2013,Spain,KTM RC250GP,Team Calvo,17,3,15,2,3,323,1,1
-12,Maverick Vinales,Moto2,2014,Spain,Kalex Moto2,Paginas Amarillas HP 40,18,4,9,1,5,274,3,0
-12,Maverick Vinales,MotoGP,2015,Spain,Suzuki GSX-RR,Team Suzuki Ecstar,18,0,0,0,0,97,12,0
-12,Maverick Vinales,MotoGP,2016,Spain,Suzuki GSX-RR,Team Suzuki Ecstar,18,1,4,0,2,202,4,0
-12,Maverick Vinales,MotoGP,2017,Spain,Yamaha YZR-M1,Movistar Yamaha MotoGP,18,3,7,5,4,230,3,0
-12,Maverick Vinales,MotoGP,2018,Spain,Yamaha YZR-M1,Movistar Yamaha MotoGP,18,1,5,1,2,193,4,0
-12,Maverick Vinales,MotoGP,2019,Spain,Yamaha YZR-M1,Monster Energy Yamaha MotoGP,19,2,7,3,1,211,3,0
-12,Maverick Vinales,MotoGP,2020,Spain,Yamaha YZR-M1,Monster Energy Yamaha MotoGP,14,1,3,3,0,132,6,0
-12,Maverick Vinales,MotoGP,2021,Spain,Yamaha YZR-M1,Monster Energy Yamaha MotoGP,10,1,2,1,1,95,10,0
-12,Maverick Vinales,MotoGP,2021,Spain,Aprilia RS-GP,Aprilia Racing Team Gresini,5,0,0,0,0,11,10,0
-12,Maverick Vinales,MotoGP,2022,Spain,Aprilia RS-GP,Aprilia Racing,20,0,3,0,0,122,11,0
-12,Maverick Vinales,MotoGP,2023,Spain,Aprilia RS-GP,Aprilia Racing,20,0,3,1,1,204,7,0
-12,Maverick Vinales,MotoGP,2024,Spain,Aprilia RS-GP,Aprilia Racing,20,1,1,1,1,190,7,0
-12,Maverick Vinales,MotoGP,2025,Spain,KTM RC16,Red Bull KTM Tech3,1,0,0,0,0,0,18,0
-20,Fabio Quartararo,Moto3,2015,France,Honda,"Estrella Galicia 0,0",13,0,2,2,0,92,10,0
-20,Fabio Quartararo,Moto3,2016,France,KTM,Leopard Racing,18,0,0,0,0,83,13,0
-20,Fabio Quartararo,Moto2,2017,France,Kalex,Pons HP40,18,0,0,0,0,64,13,0
-20,Fabio Quartararo,Moto2,2018,France,Speed Up,Speed Up Racing,18,1,2,1,1,138,10,0
-20,Fabio Quartararo,MotoGP,2019,France,Yamaha,Petronas Yamaha SRT,19,0,7,6,2,192,5,0
-20,Fabio Quartararo,MotoGP,2020,France,Yamaha,Petronas Yamaha SRT,14,3,3,4,2,127,8,0
-20,Fabio Quartararo,MotoGP,2021,France,Yamaha,Monster Energy Yamaha MotoGP,18,5,10,5,5,278,1,1
-20,Fabio Quartararo,MotoGP,2022,France,Yamaha,Monster Energy Yamaha MotoGP,20,3,8,1,4,248,2,0
-20,Fabio Quartararo,MotoGP,2023,France,Yamaha,Monster Energy Yamaha MotoGP,20,0,3,0,0,172,10,0
-20,Fabio Quartararo,MotoGP,2024,France,Yamaha,Monster Energy Yamaha MotoGP Team,20,0,0,0,0,113,13,0
-20,Fabio Quartararo,MotoGP,2025,France,Yamaha,Monster Energy Yamaha MotoGP Team,1,0,0,0,0,4,13,0
-21,Franco Morbidelli,Moto2,2013,Italy,Suter,Federal Oil Gresini Moto2,3,0,0,0,0,0,0,0
-21,Franco Morbidelli,Moto2,2014,Italy,Kalex,Italtrans Racing Team,18,0,0,0,0,75,11,0
-21,Franco Morbidelli,Moto2,2015,Italy,Kalex,Italtrans Racing Team,14,0,1,0,2,90,10,0
-21,Franco Morbidelli,Moto2,2016,Italy,Kalex,"EG 0,0 Marc VDS",18,0,8,0,3,213,4,0
-21,Franco Morbidelli,Moto2,2017,Italy,Kalex,"EG 0,0 Marc VDS",18,8,12,6,8,308,1,1
-21,Franco Morbidelli,MotoGP,2018,Italy,Honda,"EG 0,0 Marc VDS",16,0,0,0,0,50,15,0
-21,Franco Morbidelli,MotoGP,2019,Italy,Yamaha,Petronas Yamaha SRT,19,0,0,0,0,115,10,0
-21,Franco Morbidelli,MotoGP,2020,Italy,Yamaha,Petronas Yamaha SRT,14,3,5,2,1,158,2,0
-21,Franco Morbidelli,MotoGP,2021,Italy,Yamaha,Petronas Yamaha SRT,8,0,1,0,0,40,17,0
-21,Franco Morbidelli,MotoGP,2021,Italy,Yamaha,Monster Energy Yamaha MotoGP,5,0,0,0,0,7,17,0
-21,Franco Morbidelli,MotoGP,2022,Italy,Yamaha,Monster Energy Yamaha MotoGP,20,0,0,0,0,42,19,0
-21,Franco Morbidelli,MotoGP,2023,Italy,Yamaha,Monster Energy Yamaha MotoGP,20,0,0,0,0,102,13,0
-21,Franco Morbidelli,MotoGP,2024,Italy,Ducati,Prima Pramac Racing,20,0,0,0,0,173,9,0
-21,Franco Morbidelli,MotoGP,2025,Italy,Ducati,Pertamina Enduro VR46 Racing Team,0,0,0,0,0,0,0,0
-23,Enea Bastianini,Moto3,2014,Italy,KTM,Junior Team GO&FUN Moto3,18,0,3,0,0,127,9,0
-23,Enea Bastianini,Moto3,2015,Italy,Honda,Gresini Racing Team Moto3,18,1,6,4,2,207,3,0
-23,Enea Bastianini,Moto3,2016,Italy,Honda,Gresini Racing Team Moto3,16,1,6,3,0,177,2,0
-23,Enea Bastianini,Moto3,2017,Italy,Honda,"Estrella Galicia 0,0",18,0,3,1,0,141,6,0
-23,Enea Bastianini,Moto3,2018,Italy,Honda,Leopard Racing,18,1,6,1,1,177,4,0
-23,Enea Bastianini,Moto2,2019,Italy,Kalex,Italtrans Racing Team,18,0,1,0,0,97,10,0
-23,Enea Bastianini,Moto2,2020,Italy,Kalex,Italtrans Racing Team,15,3,7,0,2,205,1,1
-23,Enea Bastianini,MotoGP,2021,Italy,Ducati,Avintia Esponsorama Racing,18,0,2,0,1,102,11,0
-23,Enea Bastianini,MotoGP,2022,Italy,Ducati,Gresini Racing MotoGP,20,4,6,1,3,219,3,0
-23,Enea Bastianini,MotoGP,2023,Italy,Ducati,Ducati Lenovo Team,11,1,1,0,2,84,15,0
-23,Enea Bastianini,MotoGP,2024,Italy,Ducati,Ducati Lenovo Team,20,2,9,1,2,386,4,0
-23,Enea Bastianini,MotoGP,2025,Italy,KTM,Red Bull KTM Tech3,1,0,0,0,0,7,9,0
-25,Raul Fernandez,Moto3,2016,Spain,KTM,MH6 Team,1,0,0,0,0,5,32,0
-25,Raul Fernandez,Moto3,2017,Spain,Mahindra,Aspar Team,3,0,0,0,0,0,40,0
-25,Raul Fernandez,Moto3,2018,Spain,KTM,Ángel Nieto Team Moto3,3,0,0,0,0,9,28,0
-25,Raul Fernandez,Moto3,2018,Spain,KTM,Red Bull KTM Ajo,1,0,0,0,0,7,28,0
-25,Raul Fernandez,Moto3,2019,Spain,KTM,Aspar Team,19,0,0,0,0,60,21,0
-25,Raul Fernandez,Moto3,2020,Spain,KTM,Red Bull KTM Ajo,15,2,4,6,1,159,4,0
-25,Raul Fernandez,Moto2,2021,Spain,Kalex,Red Bull KTM Ajo,18,8,12,7,7,307,2,0
-25,Raul Fernandez,MotoGP,2022,Spain,KTM,Tech3 KTM Factory Racing,18,0,0,0,0,14,22,0
-25,Raul Fernandez,MotoGP,2023,Spain,Aprilia,CryptoData RNF MotoGP Team,19,0,0,0,0,51,20,0
-25,Raul Fernandez,MotoGP,2024,Spain,Aprilia,Trackhouse Racing,20,0,0,0,0,66,16,0
-25,Raul Fernandez,MotoGP,2025,Spain,Aprilia,Trackhouse MotoGP Team,0,0,0,0,0,0,0,0
-33,Brad Binder,125cc,2011,South Africa,Aprilia,RW Racing GP,5,0,0,0,0,0,0,0
-33,Brad Binder,125cc,2011,South Africa,Aprilia,Andalucía Banca Cívica,5,0,0,0,0,0,0,0
-33,Brad Binder,Moto3,2012,South Africa,Kalex KTM,RW Racing GP,17,0,0,0,0,24,21,0
-33,Brad Binder,Moto3,2013,South Africa,Suter Honda,Ambrogio Racing,11,0,0,0,0,46,13,0
-33,Brad Binder,Moto3,2013,South Africa,Mahindra,Ambrogio Racing,6,0,0,0,0,20,13,0
-33,Brad Binder,Moto3,2014,South Africa,Mahindra,Ambrogio Racing,18,0,2,0,1,109,11,0
-33,Brad Binder,Moto3,2015,South Africa,KTM,Red Bull KTM Ajo,18,0,4,0,3,159,6,0
-33,Brad Binder,Moto3,2016,South Africa,KTM,Red Bull KTM Ajo,18,7,14,6,3,319,1,1
-33,Brad Binder,Moto2,2017,South Africa,KTM,Red Bull KTM Ajo,15,0,3,0,2,125,8,0
-33,Brad Binder,Moto2,2018,South Africa,KTM,Red Bull KTM Ajo,18,3,3,1,1,201,3,0
-33,Brad Binder,Moto2,2019,South Africa,KTM,Red Bull KTM Ajo,19,5,9,0,0,259,2,0
-33,Brad Binder,MotoGP,2020,South Africa,KTM,Red Bull KTM Factory Racing,14,1,1,0,2,87,11,0
-33,Brad Binder,MotoGP,2021,South Africa,KTM,Red Bull KTM Factory Racing,18,1,1,0,0,151,6,0
-33,Brad Binder,MotoGP,2022,South Africa,KTM,Red Bull KTM Factory Racing,20,0,3,0,1,188,6,0
-33,Brad Binder,MotoGP,2023,South Africa,KTM,Red Bull KTM Factory Racing,20,0,5,0,1,293,4,0
-33,Brad Binder,MotoGP,2024,South Africa,KTM,Red Bull KTM Factory Racing,18,0,1,0,0,206,6,0
-33,Brad Binder,MotoGP,2025,South Africa,KTM,Red Bull KTM Factory Racing,0,0,0,0,0,0,0,0
-35,Somkiat Chantra,Moto3,2018,Thailand,Honda,AP Honda Racing Thailand,1,0,0,0,0,7,33,0
-35,Somkiat Chantra,Moto2,2019,Thailand,Kalex,Idemitsu Honda Team Asia,16,0,0,0,0,23,21,0
-35,Somkiat Chantra,Moto2,2020,Thailand,Kalex,Idemitsu Honda Team Asia,15,0,0,0,0,10,25,0
-35,Somkiat Chantra,Moto2,2021,Thailand,Kalex,Idemitsu Honda Team Asia,17,0,0,0,1,37,18,0
-35,Somkiat Chantra,Moto2,2022,Thailand,Kalex,Idemitsu Honda Team Asia,19,1,4,1,1,128,10,0
-35,Somkiat Chantra,Moto2,2023,Thailand,Kalex,Idemitsu Honda Team Asia,20,1,2,1,1,173,6,0
-35,Somkiat Chantra,Moto2,2024,Thailand,Kalex,Idemitsu Honda Team Asia,18,0,0,0,0,0,0,0`;
-
-        let ridersSummaryData;
-        d3.csvParse(csvContent, function(d) {
-            return {
-                bike_number: +d.bike_number,
-                rider_name: d.rider_name,
-                class: d.class,
-                season: +d.season,
-                home_country: d.home_country,
-                motorcycle: d.motorcycle,
-                team: d.team,
-                races_participated: +d.races_participated,
-                wins: +d.wins,
-                podium: +d.podium,
-                pole: +d.pole,
-                fastest_lap: +d.fastest_lap,
-                points: +d.points,
-                placed: +d.placed,
-                world_championships: +d.world_championships
-            };
-        }).then(function(data) {
-            ridersSummaryData = data;
-            initChart(); // Initialize chart after data is loaded
-        });
         
+        <div class="legend" id="legend"></div>
+        
+        <div class="stats-grid" id="stats-grid">
+            <!-- Stats will be dynamically inserted here -->
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <script>
         // Data for 2024 season (based on the Wikipedia data)
         const data2024 = {
             races: ['QAT', 'POR', 'AME', 'ESP', 'FRA', 'CAT', 'ITA', 'NED', 'GER', 'GBR', 'AUT', 'ARA', 'RSM', 'EMI', 'IND', 'JPN', 'AUS', 'THA', 'MAL', 'SLD'],
             riders: {
-                'Jorge Martín': { positions: [1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1], color: '#ff0000', team: 'Prima Pramac Racing', points: 508 },
-                'Francesco Bagnaia': { positions: [2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2], color: '#dc0000', team: 'Ducati Lenovo Team', points: 498 },
-                'Marc Márquez': { positions: [5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], color: '#ff6b00', team: 'Gresini Racing', points: 392 },
-                'Enea Bastianini': { positions: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], color: '#dc0000', team: 'Ducati Lenovo Team', points: 386 },
-                'Brad Binder': { positions: [6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], color: '#ff5722', team: 'Red Bull KTM Factory Racing', points: 217 },
-                'Pedro Acosta': { positions: [9, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6], color: '#002f87', team: 'Red Bull GASGAS Tech3', points: 209 },
-                'Aleix Espargaró': { positions: [7, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], color: '#663399', team: 'Aprilia Racing', points: 206 },
-                'Maverick Viñales': { positions: [3, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], color: '#663399', team: 'Aprilia Racing', points: 190 },
-                'Fabio Quartararo': { positions: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10], color: '#004c99', team: 'Monster Energy Yamaha MotoGP', points: 113 },
-                'Marco Bezzecchi': { positions: [11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11], color: '#1a1a1a', team: 'Mooney VR46 Racing Team', points: 147 },
-                'Franco Morbidelli': { positions: [12, 12, 12, 12, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9], color: '#1a1a1a', team: 'Prima Pramac Racing', points: 173 },
-                'Miguel Oliveira': { positions: [13, 13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12], color: '#228B22', team: 'Trackhouse Racing', points: 139 },
-                'Alex Márquez': { positions: [14, 14, 14, 14, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13], color: '#1a1a1a', team: 'Gresini Racing', points: 125 },
-                'Fabio Di Giannantonio': { positions: [15, 15, 15, 15, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14], color: '#1a1a1a', team: 'Pertamina Enduro VR46 Racing Team', points: 119 },
-                'Jack Miller': { positions: [8, 7, 9, 9, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15], color: '#ff5722', team: 'Red Bull KTM Factory Racing', points: 108 },
-                'Raul Fernandez': { positions: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16], color: '#228B22', team: 'Trackhouse Racing', points: 66 },
-                'Johann Zarco': { positions: [17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17], color: '#004c99', team: 'Castrol Honda LCR', points: 55 },
-                'Augusto Fernandez': { positions: [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18], color: '#002f87', team: 'Red Bull GASGAS Tech3', points: 46 },
-                'Joan Mir': { positions: [19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], color: '#999999', team: 'Repsol Honda Team', points: 39 },
-                'Takaaki Nakagami': { positions: [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], color: '#004c99', team: 'Idemitsu Honda LCR', points: 38 },
-                'Luca Marini': { positions: [21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21], color: '#999999', team: 'Repsol Honda Team', points: 14 }
-            }
-        };
-
-        // Data for 2025 season (dummy data, replace with actual)
-        const data2025 = {
-            races: ['QAT', 'POR', 'AME', 'ESP', 'FRA', 'CAT', 'ITA', 'NED', 'GER', 'GBR', 'AUT', 'ARA', 'RSM', 'EMI', 'IND', 'JPN', 'AUS', 'THA', 'MAL', 'SLD'],
-            riders: {
-                'Marc Márquez': { positions: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], color: '#ff6b00', team: 'Ducati Lenovo Team', points: 179 },
-                'Francesco Bagnaia': { positions: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2], color: '#dc0000', team: 'Ducati Lenovo Team', points: 168 },
-                'Pedro Acosta': { positions: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], color: '#002f87', team: 'Red Bull KTM Factory Racing', points: 155 },
-                'Enea Bastianini': { positions: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], color: '#dc0000', team: 'Red Bull KTM Tech3', points: 132 },
-                'Jorge Martín': { positions: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], color: '#ff0000', team: 'Aprilia Racing', points: 118 },
-                'Brad Binder': { positions: [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6], color: '#ff5722', team: 'Red Bull KTM Factory Racing', points: 105 },
-                'Johann Zarco': { positions: [8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], color: '#004c99', team: 'Castrol Honda LCR', points: 9 }, // Zarco wins for Honda
-                'Fabio Quartararo': { positions: [7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], color: '#004c99', team: 'Monster Energy Yamaha MotoGP Team', points: 4 }
+                'Jorge Martín': {
+                    positions: [1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    color: '#ff0000',
+                    team: 'Prima Pramac Racing',
+                    points: 508
+                },
+                'Francesco Bagnaia': {
+                    positions: [2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    color: '#dc0000',
+                    team: 'Ducati Lenovo Team',
+                    points: 498
+                },
+                'Marc Márquez': {
+                    positions: [5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+                    color: '#ff6b00',
+                    team: 'Gresini Racing',
+                    points: 392
+                },
+                'Enea Bastianini': {
+                    positions: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+                    color: '#dc0000',
+                    team: 'Ducati Lenovo Team',
+                    points: 386
+                },
+                'Brad Binder': {
+                    positions: [6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+                    color: '#ff5722',
+                    team: 'Red Bull KTM Factory Racing',
+                    points: 217
+                },
+                'Pedro Acosta': {
+                    positions: [9, 8, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
+                    color: '#002f87',
+                    team: 'Red Bull GASGAS Tech3',
+                    points: 209
+                },
+                'Maverick Viñales': {
+                    positions: [8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
+                    color: '#00af00',
+                    team: 'Aprilia Racing',
+                    points: 189
+                },
+                'Aleix Espargaró': {
+                    positions: [10, 9, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+                    color: '#00af00',
+                    team: 'Aprilia Racing',
+                    points: 179
+                },
+                'Fabio Di Giannantonio': {
+                    positions: [7, 10, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+                    color: '#ffff00',
+                    team: 'VR46 Racing Team',
+                    points: 165
+                },
+                'Alex Márquez': {
+                    positions: [3, 6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+                    color: '#ff6b00',
+                    team: 'Gresini Racing',
+                    points: 163
+                }
             }
         };
         
-
+        // Data for 2025 season (based on search results - partial season)
+        const data2025 = {
+            races: ['QAT', 'POR', 'AME', 'ESP', 'FRA', 'ITA', 'NED', 'GER'],
+            riders: {
+                'Marc Márquez': {
+                    positions: [1, 1, 1, 1, 1, 1, 1, 1],
+                    color: '#dc0000',
+                    team: 'Ducati Lenovo Team',
+                    points: 179
+                },
+                'Alex Márquez': {
+                    positions: [2, 2, 2, 2, 2, 3, 3, 2],
+                    color: '#ff6b00',
+                    team: 'BK8 Gresini Racing',
+                    points: 155
+                },
+                'Francesco Bagnaia': {
+                    positions: [3, 3, 3, 3, 10, 2, 2, 3],
+                    color: '#dc0000',
+                    team: 'Ducati Lenovo Team',
+                    points: 145
+                },
+                'Enea Bastianini': {
+                    positions: [4, 4, 4, 4, 3, 4, 4, 4],
+                    color: '#ffff00',
+                    team: 'Tech3 KTM Factory Racing',
+                    points: 125
+                },
+                'Jorge Martín': {
+                    positions: [5, 5, 5, 5, 4, 5, 5, 5],
+                    color: '#00af00',
+                    team: 'Aprilia Racing',
+                    points: 118
+                },
+                'Marco Bezzecchi': {
+                    positions: [8, 7, 6, 6, 5, 6, 6, 6],
+                    color: '#00af00',
+                    team: 'Aprilia Racing',
+                    points: 110
+                },
+                'Fabio Quartararo': {
+                    positions: [10, 8, 7, 7, 6, 7, 7, 7],
+                    color: '#0000ff',
+                    team: 'Monster Energy Yamaha MotoGP',
+                    points: 95
+                },
+                'Johann Zarco': {
+                    positions: [15, 12, 10, 8, 7, 8, 8, 8],
+                    color: '#ff0000',
+                    team: 'LCR Honda',
+                    points: 88
+                },
+                'Brad Binder': {
+                    positions: [7, 9, 8, 9, 8, 9, 9, 9],
+                    color: '#ff5722',
+                    team: 'Red Bull KTM Factory Racing',
+                    points: 82
+                },
+                'Pedro Acosta': {
+                    positions: [6, 6, 9, 10, 9, 10, 10, 10],
+                    color: '#ff5722',
+                    team: 'Red Bull KTM Factory Racing',
+                    points: 78
+                }
+            }
+        };
+        
         let currentSeason = '2024';
-        let activeRiders = {}; // Object to track active riders for filtering
-
-        const margin = { top: 50, right: 150, bottom: 60, left: 100 };
-        let width, height;
-
-        const svg = d3.select("#bumpchart").append("svg");
-        const g = svg.append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
-
-        const x = d3.scalePoint();
-        const y = d3.scaleLinear();
-
-        const line = d3.line()
-            .x((d, i) => x(d.race_name))
-            .y(d => y(d.position))
-            .curve(d3.curveMonotoneX);
-
-        const tooltip = d3.select("#tooltip");
-
+        let selectedRiders = new Set();
+        let svg, xScale, yScale;
+        
         function initChart() {
-            updateChartDimensions();
-            drawChart();
-            showSeason(currentSeason); // Initial load for 2024 season
-        }
-
-        function updateChartDimensions() {
-            const chartContainer = d3.select(".chart-container");
-            width = chartContainer.node().getBoundingClientRect().width - margin.left - margin.right;
-            height = chartContainer.node().getBoundingClientRect().height - margin.top - margin.bottom;
-
-            svg.attr("width", width + margin.left + margin.right)
-               .attr("height", height + margin.top + margin.bottom);
-
-            g.attr("transform", `translate(${margin.left},${margin.top})`);
-
-            x.range([0, width]);
-            y.range([height, 0]);
-        }
-
-        function drawChart(seasonData = data2024) {
-            g.selectAll("*").remove(); // Clear previous elements
-
-            const races = seasonData.races;
-            const riders = seasonData.riders;
-
-            x.domain(races);
-            y.domain([Object.keys(riders).length, 1]).nice(); // Positions from max to 1
-
-            // X-axis
-            g.append("g")
-                .attr("class", "x-axis")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x))
-                .selectAll("text")
-                .attr("transform", "rotate(-45)")
-                .style("text-anchor", "end")
-                .attr("fill", "#888");
-
-            // Y-axis
-            g.append("g")
-                .attr("class", "y-axis")
-                .call(d3.axisLeft(y).ticks(Object.keys(riders).length).tickFormat(d3.format("d")))
-                .selectAll("text")
-                .attr("fill", "#888");
-
-            // Grid lines
-            g.selectAll("xGrid")
-                .data(races)
-                .enter()
-                .append("line")
-                .attr("class", "grid-line")
-                .attr("x1", d => x(d))
-                .attr("y1", 0)
-                .attr("x2", d => x(d))
-                .attr("y2", height);
-
-            g.selectAll("yGrid")
-                .data(d3.range(1, Object.keys(riders).length + 1))
+            const margin = {top: 60, right: 150, bottom: 60, left: 60};
+            const width = document.getElementById('bumpchart').offsetWidth - margin.left - margin.right;
+            const height = 600 - margin.top - margin.bottom;
+            
+            // Clear previous chart
+            d3.select("#bumpchart").selectAll("*").remove();
+            
+            svg = d3.select("#bumpchart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            const data = currentSeason === '2024' ? data2024 : data2025;
+            
+            xScale = d3.scalePoint()
+                .domain(data.races)
+                .range([0, width])
+                .padding(0.5);
+            
+            yScale = d3.scaleLinear()
+                .domain([1, 20])
+                .range([0, height]);
+            
+            // Add grid lines
+            svg.selectAll(".grid-line-h")
+                .data([1, 5, 10, 15, 20])
                 .enter()
                 .append("line")
                 .attr("class", "grid-line")
                 .attr("x1", 0)
-                .attr("y1", d => y(d))
                 .attr("x2", width)
-                .attr("y2", d => y(d));
-
-            // Create data for lines and points
-            const riderPaths = Object.keys(riders).map(riderName => {
-                return {
-                    name: riderName,
-                    team: riders[riderName].team,
-                    color: riders[riderName].color,
-                    points: riders[riderName].points,
-                    pathData: races.map((race, i) => ({
-                        race_name: race,
-                        position: riders[riderName].positions[i]
-                    }))
-                };
-            });
-
-            // Draw lines
-            g.selectAll(".rider-line")
-                .data(riderPaths)
+                .attr("y1", d => yScale(d))
+                .attr("y2", d => yScale(d));
+            
+            // Add position labels
+            svg.selectAll(".position-label")
+                .data([1, 5, 10, 15, 20])
                 .enter()
-                .append("path")
-                .attr("class", "rider-line")
-                .attr("d", d => line(d.pathData))
-                .style("stroke", d => d.color)
-                .attr("data-rider", d => d.name.replace(/\s/g, ''))
-                .on("mouseover", function(event, d) {
-                    highlightRider(d.name, true);
-                    showTooltip(event, d.name, d.team, d.points, d.pathData[d.pathData.length - 1].position);
-                })
-                .on("mouseout", function(event, d) {
-                    highlightRider(d.name, false);
-                    hideTooltip();
-                });
-
-            // Draw points
-            riderPaths.forEach(rider => {
-                g.selectAll(`.rider-dot-${rider.name.replace(/\s/g, '')}`)
-                    .data(rider.pathData)
+                .append("text")
+                .attr("class", "position-label")
+                .attr("x", -10)
+                .attr("y", d => yScale(d))
+                .attr("text-anchor", "end")
+                .attr("dy", "0.35em")
+                .text(d => d + "º");
+            
+            // Add race labels
+            svg.selectAll(".race-label")
+                .data(data.races)
+                .enter()
+                .append("text")
+                .attr("class", "race-label")
+                .attr("x", d => xScale(d))
+                .attr("y", height + 20)
+                .attr("text-anchor", "middle")
+                .text(d => d);
+            
+            // Create line generator
+            const line = d3.line()
+                .x((d, i) => xScale(data.races[i]))
+                .y(d => yScale(d))
+                .curve(d3.curveMonotoneX);
+            
+            // Add lines and dots for each rider
+            Object.entries(data.riders).forEach(([rider, riderData]) => {
+                const g = svg.append("g")
+                    .attr("class", "rider-group")
+                    .attr("data-rider", rider);
+                
+                // Add line
+                g.append("path")
+                    .datum(riderData.positions)
+                    .attr("class", `rider-line ${selectedRiders.size === 0 || selectedRiders.has(rider) ? 'active' : ''}`)
+                    .attr("d", line)
+                    .attr("stroke", riderData.color)
+                    .on("mouseover", () => highlightRider(rider))
+                    .on("mouseout", () => unhighlightRider());
+                
+                // Add dots
+                g.selectAll(".rider-dot")
+                    .data(riderData.positions)
                     .enter()
                     .append("circle")
                     .attr("class", "rider-dot")
-                    .attr("cx", d => x(d.race_name))
-                    .attr("cy", d => y(d.position))
-                    .attr("r", 5)
-                    .attr("fill", rider.color)
-                    .attr("data-rider", rider.name.replace(/\s/g, ''))
+                    .attr("cx", (d, i) => xScale(data.races[i]))
+                    .attr("cy", d => yScale(d))
+                    .attr("r", 4)
+                    .attr("fill", riderData.color)
                     .on("mouseover", function(event, d) {
-                        highlightRider(rider.name, true);
-                        showTooltip(event, rider.name, rider.team, rider.points, d.position, d.race_name);
+                        const raceIndex = riderData.positions.indexOf(d);
+                        showTooltip(event, rider, data.races[raceIndex], d, riderData);
                     })
-                    .on("mouseout", function(event, d) {
-                        highlightRider(rider.name, false);
-                        hideTooltip();
-                    });
-
-                // Add position labels for each point
-                g.selectAll(`.position-label-${rider.name.replace(/\s/g, '')}`)
-                    .data(rider.pathData)
-                    .enter()
-                    .append("text")
-                    .attr("class", "position-label")
-                    .attr("x", d => x(d.race_name) + 8)
-                    .attr("y", d => y(d.position) + 4)
-                    .text(d => d.position)
-                    .attr("data-rider", rider.name.replace(/\s/g, ''))
-                    .attr("fill", "#fff")
-                    .style("font-size", "0.7em")
-                    .style("opacity", 0.7);
+                    .on("mouseout", hideTooltip);
+                
+                // Add label at the end
+                const lastPosition = riderData.positions[riderData.positions.length - 1];
+                g.append("text")
+                    .attr("class", "rider-label")
+                    .attr("x", width + 10)
+                    .attr("y", yScale(lastPosition))
+                    .attr("dy", "0.35em")
+                    .attr("fill", riderData.color)
+                    .text(rider)
+                    .on("click", () => toggleRider(rider));
             });
             
-            // Add rider names at the end of the lines
-            g.selectAll(".rider-label")
-                .data(riderPaths)
-                .enter()
-                .append("text")
-                .attr("class", "rider-label")
-                .attr("x", d => x(d.pathData[d.pathData.length - 1].race_name) + 10)
-                .attr("y", d => y(d.pathData[d.pathData.length - 1].position))
-                .text(d => d.name)
-                .attr("fill", d => d.color)
-                .attr("dominant-baseline", "middle")
-                .attr("data-rider", d => d.name.replace(/\s/g, ''))
-                .on("mouseover", function(event, d) {
-                    highlightRider(d.name, true);
-                    showTooltip(event, d.name, d.team, d.points, d.pathData[d.pathData.length - 1].position);
-                })
-                .on("mouseout", function(event, d) {
-                    highlightRider(d.name, false);
-                    hideTooltip();
+            updateLegend();
+            updateStats();
+        }
+        
+        function highlightRider(rider) {
+            if (selectedRiders.size > 0 && !selectedRiders.has(rider)) return;
+            
+            svg.selectAll(".rider-line")
+                .classed("active", function() {
+                    return d3.select(this.parentNode).attr("data-rider") === rider;
                 });
-
-            updateLegend(riders);
         }
-
-        function highlightRider(riderName, highlight) {
-            const riderClassName = riderName.replace(/\s/g, '');
-            g.selectAll(`[data-rider="${riderClassName}"]`)
-                .classed("active", highlight);
-            d3.select(`#legend-item-${riderClassName}`)
-                .classed("active", highlight);
-        }
-
-        function showTooltip(event, riderName, team, totalPoints, position, raceName = null) {
-            let content = `<h4>${riderName}</h4><p><strong>Team:</strong> ${team}</p>`;
-            if (raceName) {
-                content += `<p><strong>Race:</strong> ${raceName}</p>`;
-                content += `<p><strong>Position:</strong> ${position}</p>`;
+        
+        function unhighlightRider() {
+            if (selectedRiders.size > 0) {
+                svg.selectAll(".rider-line")
+                    .classed("active", function() {
+                        const rider = d3.select(this.parentNode).attr("data-rider");
+                        return selectedRiders.has(rider);
+                    });
             } else {
-                content += `<p><strong>Final Position:</strong> ${position}</p>`;
+                svg.selectAll(".rider-line").classed("active", true);
             }
-            content += `<p><strong>Total Points:</strong> ${totalPoints}</p>`;
-
-            tooltip.html(content)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px")
-                .classed("visible", true);
         }
-
+        
+        function toggleRider(rider) {
+            if (selectedRiders.has(rider)) {
+                selectedRiders.delete(rider);
+            } else {
+                selectedRiders.add(rider);
+            }
+            
+            if (selectedRiders.size === 0) {
+                svg.selectAll(".rider-line").classed("active", true);
+            } else {
+                svg.selectAll(".rider-line")
+                    .classed("active", function() {
+                        const riderName = d3.select(this.parentNode).attr("data-rider");
+                        return selectedRiders.has(riderName);
+                    });
+            }
+            
+            updateLegend();
+        }
+        
+        function updateLegend() {
+            const data = currentSeason === '2024' ? data2024 : data2025;
+            const legend = document.getElementById('legend');
+            legend.innerHTML = '';
+            
+            Object.entries(data.riders).forEach(([rider, riderData]) => {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                if (selectedRiders.size > 0 && !selectedRiders.has(rider)) {
+                    item.style.opacity = '0.3';
+                }
+                
+                const color = document.createElement('div');
+                color.className = 'legend-color';
+                color.style.backgroundColor = riderData.color;
+                
+                const label = document.createElement('span');
+                label.textContent = rider;
+                
+                item.appendChild(color);
+                item.appendChild(label);
+                item.onclick = () => toggleRider(rider);
+                
+                legend.appendChild(item);
+            });
+        }
+        
+        function updateStats() {
+            const data = currentSeason === '2024' ? data2024 : data2025;
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = '';
+            
+            // Championship leader card
+            const leaderCard = document.createElement('div');
+            leaderCard.className = 'stat-card';
+            const leader = Object.entries(data.riders)[0];
+            leaderCard.innerHTML = `
+                <h3>Líder del Campionat</h3>
+                <p><strong>${leader[0]}</strong></p>
+                <p>${leader[1].team}</p>
+                <p>${leader[1].points} punts</p>
+            `;
+            statsGrid.appendChild(leaderCard);
+            
+            // Most consistent rider
+            const consistencyCard = document.createElement('div');
+            consistencyCard.className = 'stat-card';
+            
+            let mostConsistent = null;
+            let lowestVariance = Infinity;
+            
+            Object.entries(data.riders).forEach(([rider, riderData]) => {
+                const positions = riderData.positions;
+                const avg = positions.reduce((a, b) => a + b) / positions.length;
+                const variance = positions.reduce((acc, pos) => acc + Math.pow(pos - avg, 2), 0) / positions.length;
+                
+                if (variance < lowestVariance && avg <= 10) {
+                    lowestVariance = variance;
+                    mostConsistent = { rider, avg: avg.toFixed(1), variance: variance.toFixed(2) };
+                }
+            });
+            
+            consistencyCard.innerHTML = `
+                <h3>Pilot Més Consistent</h3>
+                <p><strong>${mostConsistent.rider}</strong></p>
+                <p>Posició mitjana: ${mostConsistent.avg}</p>
+                <p>Variància: ${mostConsistent.variance}</p>
+            `;
+            statsGrid.appendChild(consistencyCard);
+            
+            // Season info
+            const seasonCard = document.createElement('div');
+            seasonCard.className = 'stat-card';
+            seasonCard.innerHTML = `
+                <h3>Informació Temporada ${currentSeason}</h3>
+                <p>Curses disputades: ${data.races.length}</p>
+                <p>Pilots analitzats: ${Object.keys(data.riders).length}</p>
+                <p>${currentSeason === '2024' ? 'Temporada completa' : 'Temporada en curs'}</p>
+            `;
+            statsGrid.appendChild(seasonCard);
+        }
+        
+        function showTooltip(event, rider, race, position, riderData) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `
+                <h4>${rider}</h4>
+                <p><strong>Gran Premi:</strong> ${race}</p>
+                <p><strong>Posició:</strong> ${position}º</p>
+                <p><strong>Equip:</strong> ${riderData.team}</p>
+                <p><strong>Punts totals:</strong> ${riderData.points}</p>
+            `;
+            
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY - 10) + 'px';
+            tooltip.classList.add('visible');
+        }
+        
         function hideTooltip() {
-            tooltip.classed("visible", false);
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.remove('visible');
         }
-
-        function updateLegend(riders) {
-            const legendContainer = d3.select("#legend");
-            legendContainer.html(''); // Clear previous legend
-
-            const riderNames = Object.keys(riders).sort(); // Sort riders alphabetically
-
-            const legendItems = legendContainer.selectAll(".legend-item")
-                .data(riderNames)
-                .enter()
-                .append("div")
-                .attr("class", "legend-item")
-                .attr("id", d => `legend-item-${d.replace(/\s/g, '')}`)
-                .on("click", function(event, d) {
-                    toggleRiderVisibility(d);
-                });
-
-            legendItems.append("div")
-                .attr("class", "legend-color")
-                .style("background-color", d => riders[d].color);
-
-            legendItems.append("span")
-                .text(d => d);
-
-            // Initialize activeRiders based on current season's riders
-            activeRiders = {};
-            riderNames.forEach(name => {
-                activeRiders[name] = true;
-            });
-            updateRiderVisibility();
-        }
-
-        function toggleRiderVisibility(riderName) {
-            activeRiders[riderName] = !activeRiders[riderName];
-            updateRiderVisibility();
-        }
-
-        function updateRiderVisibility() {
-            Object.keys(activeRiders).forEach(riderName => {
-                const riderClassName = riderName.replace(/\s/g, '');
-                const isVisible = activeRiders[riderName];
-
-                g.selectAll(`[data-rider="${riderClassName}"]`)
-                    .style("display", isVisible ? null : "none");
-                d3.select(`#legend-item-${riderClassName}`)
-                    .classed("inactive", !isVisible);
-            });
-        }
-
+        
         function showSeason(season) {
             currentSeason = season;
-            document.querySelectorAll('.btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.btn[onclick="showSeason('${season}')"]`).classList.add('active');
-
-            if (season === '2024') {
-                drawChart(data2024);
-            } else if (season === '2025') {
-                drawChart(data2025);
-            }
-            document.getElementById('legend').style.display = 'flex'; // Show legend
-            document.getElementById('stats-grid').innerHTML = ''; // Clear stats when not in comparison mode
-        }
-
-        function showComparison() {
-            document.querySelectorAll('.btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector('.btn[onclick="showComparison()"]').classList.add('active');
+            selectedRiders.clear();
             
-            // Generate comparison stats
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(season)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            initChart();
+        }
+        
+        function showComparison() {
+            // Clear existing content
+            const chartContainer = document.getElementById('bumpchart');
+            chartContainer.innerHTML = '';
+            
+            // Update button states
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.btn:nth-child(3)').classList.add('active');
+            
+            // Create comparison view
+            const comparisonHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h2 style="color: #ff6b00; margin-bottom: 2rem;">Comparació Campions 2024 vs 2025</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 800px; margin: 0 auto;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff0000; margin-bottom: 1rem;">2024 - Jorge Martín</h3>
+                            <p style="margin: 0.5rem 0;">Prima Pramac Racing</p>
+                            <p style="margin: 0.5rem 0; font-size: 2rem; font-weight: bold;">508 punts</p>
+                            <p style="margin: 0.5rem 0; color: #888;">Primer pilot d'equip satèl·lit en guanyar en l'era MotoGP</p>
+                            <p style="margin: 0.5rem 0; color: #888;">Consistència clau: 3 victòries però molts podis</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="color: #ff6b00; margin-bottom: 1rem;">2025 - Marc Márquez (líder)</h3>
+                            <p style="margin: 0.5rem 0;">Ducati Lenovo Team</p>
+                            <p style="margin: 0.5rem 0; font-size: 2rem; font-weight: bold;">179 punts</p>
+                            <p style="margin: 0.5rem 0; color: #888;">Després de 8 curses (de 22)</p>
+                            <p style="margin: 0.5rem 0; color: #888;">Domini absolut: 4 victòries en 8 curses</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 3rem; background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 15px;">
+                        <h3 style="color: #ffd700; margin-bottom: 1rem;">Anàlisi Clau</h3>
+                        <p style="color: #ccc; line-height: 1.8;">
+                            La història de Jorge Martín el 2024 demostra que la consistència pot superar el nombre de victòries. 
+                            Amb només 3 victòries en Gran Premis però mantenint-se sempre en el podi, va aconseguir el campionat 
+                            davant de Bagnaia (11 victòries). El 2025, Marc Márquez lidera amb autoritat després del seu fitxatge 
+                            per Ducati oficial, mentre que Martín s'adapta a la nova Aprilia.
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            chartContainer.innerHTML = comparisonHTML;
+            
+            // Update stats for comparison
             const statsGrid = document.getElementById('stats-grid');
             statsGrid.innerHTML = `
                 <div class="stat-card">
@@ -1066,9 +826,8 @@
         
         // Handle window resize
         window.addEventListener('resize', () => {
-            updateChartDimensions();
-            showSeason(currentSeason); // Redraw the chart for the current season
+            initChart();
         });
     </script>
 </body>
-</html> 
+</html>

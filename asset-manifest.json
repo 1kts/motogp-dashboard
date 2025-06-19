@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/motogp-dashboard/static/css/main.caa3f274.css",
+    "main.css": "/motogp-dashboard/static/css/main.213ebf20.css",
     "main.js": "/motogp-dashboard/static/js/main.88eb8623.js",
     "index.html": "/motogp-dashboard/index.html",
-    "main.caa3f274.css.map": "/motogp-dashboard/static/css/main.caa3f274.css.map",
+    "main.213ebf20.css.map": "/motogp-dashboard/static/css/main.213ebf20.css.map",
     "main.88eb8623.js.map": "/motogp-dashboard/static/js/main.88eb8623.js.map"
   },
   "entrypoints": [
-    "static/css/main.caa3f274.css",
+    "static/css/main.213ebf20.css",
     "static/js/main.88eb8623.js"
   ]
 }

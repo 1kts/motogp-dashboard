@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MotoGP 2024 vs 2025</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #121212;
+      color: #ffffff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f3ec78;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #333;
+      color: white;
+    }
+
+    button.active {
+      background-color: #f3ec78;
+      color: black;
+    }
+
+    .chart-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    svg {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+    }
+
+    .stats {
+      margin-left: 2rem;
+      max-width: 300px;
+    }
+
+    .stat-card {
+      background-color: #1f1f1f;
+      border-left: 5px solid #f3ec78;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border-radius: 5px;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 0.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Comparativa de Punts MotoGP 2024 vs 2025</h1>
+  <div class="controls">
+    <button id="ridersBtn" class="active">Pilots</button>
+    <button id="constructorsBtn">Constructors</button>
+  </div>
+  <div class="chart-container">
+    <svg width="800" height="500"></svg>
+    <div class="stats"></div>
+  </div>
+
+  <script>
+    const svg = d3.select("svg");
+    const statsContainer = document.querySelector('.stats');
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+    const margin = { top: 40, right: 30, bottom: 40, left: 60 };
+
+    const riderColors = {
+      "Bagnaia": "#ff595e",
+      "Martin": "#1982c4",
+      "Marc Marquez": "#ffca3a",
+      "Binder": "#8ac926",
+      "Espargaro": "#6a4c93"
+    };
+
+    const constructorColors = {
+      "Ducati": "#ff595e",
+      "KTM": "#8ac926",
+      "Aprilia": "#6a4c93",
+      "Yamaha": "#1982c4",
+      "Honda": "#ffca3a"
+    };
+
+    const motogpData = {
+      "2024": {
+        "riders": [
+          { name: "Bagnaia", points: 265 },
+          { name: "Martin", points: 245 },
+          { name: "Marc Marquez", points: 155 },
+          { name: "Binder", points: 142 },
+          { name: "Espargaro", points: 130 }
+        ],
+        "constructors": [
+          { name: "Ducati", points: 470 },
+          { name: "KTM", points: 198 },
+          { name: "Aprilia", points: 160 },
+          { name: "Yamaha", points: 110 },
+          { name: "Honda", points: 65 }
+        ]
+      },
+      "2025": {
+        "riders": [
+          { name: "Bagnaia", points: 280 },
+          { name: "Martin", points: 210 },
+          { name: "Marc Marquez", points: 200 },
+          { name: "Binder", points: 165 },
+          { name: "Espargaro", points: 135 }
+        ],
+        "constructors": [
+          { name: "Ducati", points: 490 },
+          { name: "KTM", points: 210 },
+          { name: "Aprilia", points: 155 },
+          { name: "Yamaha", points: 125 },
+          { name: "Honda", points: 90 }
+        ]
+      }
+    };
+
+    let activeChart = 'riders';
+
+    function drawChart() {
+      svg.selectAll("*").remove();
+      const data2024 = motogpData["2024"][activeChart];
+      const data2025 = motogpData["2025"][activeChart];
+      const allNames = Array.from(new Set([...data2024.map(d => d.name), ...data2025.map(d => d.name)]));
+
+      const colorScale = activeChart === 'riders' ? riderColors : constructorColors;
+
+      const x0 = d3.scaleBand()
+        .domain(allNames)
+        .range([margin.left, width - margin.right])
+        .padding(0.2);
+
+      const x1 = d3.scaleBand()
+        .domain(["2024", "2025"])
+        .range([0, x0.bandwidth()])
+        .padding(0.05);
+
+      const maxY = d3.max([...data2024, ...data2025], d => d.points);
+
+      const y = d3.scaleLinear()
+        .domain([0, maxY + 50])
+        .nice()
+        .range([height - margin.bottom, margin.top]);
+
+      const xAxis = g => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x0).tickSizeOuter(0))
+        .selectAll("text")
+        .style("fill", "white");
+
+      const yAxis = g => g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .selectAll("text")
+        .style("fill", "white");
+
+      svg.append("g").call(xAxis);
+      svg.append("g").call(yAxis);
+
+      const barGroups = svg.append("g")
+        .selectAll("g")
+        .data(allNames)
+        .join("g")
+        .attr("transform", d => `translate(${x0(d)},0)`);
+
+      barGroups.selectAll("rect")
+        .data(d => {
+          const d2024 = data2024.find(x => x.name === d);
+          const d2025 = data2025.find(x => x.name === d);
+          return [
+            { year: "2024", points: d2024 ? d2024.points : 0 },
+            { year: "2025", points: d2025 ? d2025.points : 0 }
+          ];
+        })
+        .join("rect")
+        .attr("x", d => x1(d.year))
+        .attr("y", d => y(d.points))
+        .attr("width", x1.bandwidth())
+        .attr("height", d => y(0) - y(d.points))
+        .attr("fill", d => colorScale[this.parentNode.__data__] || "#f3ec78");
+
+      updateStats();
+    }
+
+    function updateStats() {
+      statsContainer.innerHTML = '';
+
+      const colorScale = activeChart === 'riders' ? riderColors : constructorColors;
+      const data2024 = motogpData['2024'][activeChart];
+      const data2025 = motogpData['2025'][activeChart];
+
+      const allNames = Array.from(new Set([...data2024.map(d => d.name), ...data2025.map(d => d.name)]));
+
+      allNames.forEach(name => {
+        const d2024 = data2024.find(d => d.name === name);
+        const d2025 = data2025.find(d => d.name === name);
+
+        const points2024 = d2024 ? d2024.points : 0;
+        const points2025 = d2025 ? d2025.points : 0;
+        const diff = points2025 - points2024;
+        const sign = diff > 0 ? '+' : '';
+        const diffText = diff === 0 ? 'Sense canvi' : `${sign}${diff} punts`;
+
+        const card = document.createElement('div');
+        card.classList.add('stat-card');
+
+        card.innerHTML = `
+          <h3 style="color: ${colorScale[name] || '#f3ec78'}">${name}</h3>
+          <p><strong>2024:</strong> ${points2024} punts</p>
+          <p><strong>2025:</strong> ${points2025} punts</p>
+          <p><strong>Diferència:</strong> ${diffText}</p>
+        `;
+
+        statsContainer.appendChild(card);
+      });
+    }
+
+    document.getElementById("ridersBtn").addEventListener("click", () => {
+      activeChart = "riders";
+      document.getElementById("ridersBtn").classList.add("active");
+      document.getElementById("constructorsBtn").classList.remove("active");
+      drawChart();
+    });
+
+    document.getElementById("constructorsBtn").addEventListener("click", () => {
+      activeChart = "constructors";
+      document.getElementById("constructorsBtn").classList.add("active");
+      document.getElementById("ridersBtn").classList.remove("active");
+      drawChart();
+    });
+
+    drawChart();
+  </script>
+</body>
+</html>
